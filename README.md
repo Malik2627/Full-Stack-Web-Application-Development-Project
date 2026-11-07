@@ -579,11 +579,37 @@ node frontend/test_analytics_matrix.js
 
 ---
 
-## 🌐 16. Deployment Status
+## 🌐 16. Deployment Status & Preparation
 
+### Deployment Status
+- **Current Status:** Local development and deployment preparation complete. **Deployment has not yet been performed.**
 - **Local Development & Testing:** Fully operational (`http://127.0.0.1:5000`)
 - **Target GitHub Repository:** [Malik2627/Full-Stack-Web-Application-Development-Project](https://github.com/Malik2627/Full-Stack-Web-Application-Development-Project)
-- **Live Demo:** `Coming soon` *(Cloud deployment will be executed in subsequent release stages)*
+- **Live Demo:** `Coming soon` *(Actual cloud deployment will be performed in subsequent steps)*
+
+### Deployment Preparation (Step 16)
+TaskFlow has been configured for one-click deployment to standard cloud platforms (such as Render or Railway):
+
+- **Backend Framework:** Python Flask 3.0+
+- **Production WSGI Server:** Gunicorn 21.2+ via root entry point [`wsgi.py`](file:///D:/Task-flow/wsgi.py)
+- **Database Engine:** SQLite 3 (`database/taskflow.db` automatically created and seeded on startup)
+- **Production Start Command:**
+  ```bash
+  gunicorn --bind 0.0.0.0:$PORT wsgi:app
+  ```
+- **Build Command:**
+  ```bash
+  pip install -r backend/requirements.txt
+  ```
+- **Environment Variables:**
+  - `SECRET_KEY`: Cryptographic signing key for sessions and tokens.
+  - `PORT`: Server binding port (automatically injected by Render/cloud environments, default `5000`).
+  - `FLASK_DEBUG`: Set to `False` in production.
+  - `DATABASE_PATH`: SQLite file path (default `database/taskflow.db`).
+  - `CORS_ORIGINS`: Allowed origins (e.g. `*` or specific frontend domain).
+- **SQLite Cloud Storage Limitation:**
+  > [!WARNING]
+  > Free cloud tiers (such as Render free web services) utilize ephemeral container filesystems that reset when instances spin down due to inactivity. Consequently, SQLite changes will revert to the initial seeded state upon container reboot unless a persistent disk volume is mounted at `DATABASE_PATH`, or an external database (e.g. PostgreSQL) is attached in future steps.
 
 ---
 

@@ -5,14 +5,24 @@
  */
 
 const TaskFlowAPI = (() => {
-    // Single centralized API base configuration for local Flask backend
+    // Single centralized API base configuration (supports local dev and cloud production)
     const BASE_URL = (() => {
+        // 1. Explicit window override (e.g., set by production template or environment)
         if (typeof window !== 'undefined' && window.TASKFLOW_API_URL) {
             return window.TASKFLOW_API_URL;
         }
-        if (typeof window !== 'undefined' && window.location && window.location.origin && window.location.origin.includes(':5000')) {
-            return `${window.location.origin}/api`;
+        // 2. Same-origin deployment (e.g. deployed on Render / cloud host or local Flask server on port 5000)
+        if (typeof window !== 'undefined' && window.location && window.location.origin) {
+            if (window.location.origin.includes(':5000')) {
+                return `${window.location.origin}/api`;
+            }
+            // If hosted on a cloud domain (not localhost / 127.0.0.1 and not file:)
+            const hostname = window.location.hostname;
+            if (hostname && hostname !== 'localhost' && hostname !== '127.0.0.1' && window.location.protocol.startsWith('http')) {
+                return `${window.location.origin}/api`;
+            }
         }
+        // 3. Fallback to local Flask backend development URL
         return 'http://127.0.0.1:5000/api';
     })();
 

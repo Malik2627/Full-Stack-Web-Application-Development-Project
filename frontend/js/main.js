@@ -1189,7 +1189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showTasksErrorState(message) {
-        showTasksAlert('warning', `<strong>Backend Unavailable:</strong> ${escapeHtml(message)} (Ensure Flask is running at http://127.0.0.1:5000)`);
+        const apiUrl = window.TaskFlowAPI ? window.TaskFlowAPI.BASE_URL : 'http://127.0.0.1:5000/api';
+        showTasksAlert('warning', `<strong>Backend Unavailable:</strong> ${escapeHtml(message)} (Ensure Flask is running at ${apiUrl})`);
         if (!tasksTableBody) return;
         tasksTableBody.innerHTML = `
             <tr>

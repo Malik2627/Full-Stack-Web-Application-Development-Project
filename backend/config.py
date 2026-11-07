@@ -3,6 +3,7 @@ TaskFlow Configuration Module
 -----------------------------
 Loads configuration settings from environment variables with safe defaults.
 Supports .env files via python-dotenv for local development without committing secrets.
+Configured for production cloud deployment (Render, Railway) and local execution.
 """
 
 import os
@@ -33,14 +34,16 @@ else:
 
 
 class Config:
-    """Base application configuration with security defaults."""
+    """Base application configuration with production-ready security defaults."""
     # Cryptographic secret key for signing sessions and Bearer auth tokens
     SECRET_KEY = os.environ.get('SECRET_KEY', 'taskflow-dev-secret-key-2026')
 
-    # Debug & Server binding
-    DEBUG = os.environ.get('FLASK_DEBUG', 'True').lower() in ('true', '1', 't')
-    HOST = os.environ.get('FLASK_HOST', '127.0.0.1')
-    PORT = int(os.environ.get('FLASK_PORT', 5000))
+    # Debug mode (defaults to False for production; set FLASK_DEBUG=True in .env for local development)
+    DEBUG = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 't')
+
+    # Server binding & Cloud port (Render injects PORT, e.g. 10000)
+    HOST = os.environ.get('FLASK_HOST', os.environ.get('HOST', '0.0.0.0'))
+    PORT = int(os.environ.get('PORT', os.environ.get('FLASK_PORT', 5000)))
 
     # SQLite database file path
     DATABASE = str(DATABASE_PATH)

@@ -15,7 +15,12 @@ from routes import api_bp
 
 def create_app(config_class=Config):
     """Application factory for TaskFlow backend."""
-    app = Flask(__name__)
+    frontend_dir = Path(__file__).resolve().parent.parent / 'frontend'
+    app = Flask(
+        __name__,
+        static_folder=str(frontend_dir),
+        static_url_path=''
+    )
     app.config.from_object(config_class)
 
     # Enable Cross-Origin Resource Sharing (CORS) with credentials support
@@ -99,7 +104,10 @@ def create_app(config_class=Config):
 
     @app.route('/', methods=['GET'])
     def root():
-        """Root API check."""
+        """Root API check and browser landing page entry point."""
+        from flask import request
+        if request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json:
+            return app.send_static_file('index.html')
         return jsonify({
             "name": "TaskFlow — Student Task Management System API",
             "version": "1.0.0",
