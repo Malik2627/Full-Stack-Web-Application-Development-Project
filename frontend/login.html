@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Student Sign In</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="auth-page-wrapper">
+        <div class="auth-card">
+            <div class="auth-card-body">
+                <!-- Auth Header -->
+                <div class="auth-header">
+                    <a href="index.html" class="text-decoration-none d-inline-block">
+                        <div class="auth-logo">
+                            <i class="bi bi-check2-square"></i>
+                        </div>
+                    </a>
+                    <h1 class="auth-title">Welcome Back</h1>
+                    <p class="auth-subtitle">Sign in to your student dashboard</p>
+                </div>
+
+                <!-- Alert Feedback Box -->
+                <div id="login-alert" class="alert alert-danger d-none py-2 small" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span id="login-alert-msg"></span>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" novalidate>
+                    <!-- Email Field -->
+                    <div class="mb-3">
+                        <label for="login-email" class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="bi bi-envelope"></i>
+                            </span>
+                            <input type="email" 
+                                   class="form-control border-start-0" 
+                                   id="login-email" 
+                                   placeholder="e.g. alex.student@example.edu" 
+                                   autocomplete="email" 
+                                   required>
+                        </div>
+                        <div class="invalid-feedback small" id="login-email-err">Please enter a valid email</div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label for="login-password" class="form-label small fw-semibold">Password <span class="text-danger">*</span></label>
+                            <span class="text-muted small" style="font-size: 0.75rem;">Min 6 characters</span>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-muted">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password" 
+                                   class="form-control border-start-0 border-end-0" 
+                                   id="login-password" 
+                                   placeholder="Enter your password" 
+                                   autocomplete="current-password" 
+                                   required>
+                            <button class="btn btn-outline-secondary border-start-0 bg-light text-muted password-toggle-btn" 
+                                    type="button" 
+                                    id="toggle-password-btn" 
+                                    title="Show/Hide Password"
+                                    aria-label="Show or hide password">
+                                <i class="bi bi-eye" id="toggle-password-icon"></i>
+                            </button>
+                        </div>
+                        <div class="invalid-feedback small" id="login-password-err">Password is required.</div>
+                    </div>
+
+                    <!-- Remember Me Option -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember-me" checked>
+                            <label class="form-check-label small text-muted" for="remember-me">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="small text-primary text-decoration-none fw-semibold" id="quick-demo-link" title="Fill Demo Credentials">
+                            Demo Fill
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="login-submit-btn" class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm">
+                        <span>Sign In</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="auth-divider">or quick evaluation</div>
+
+                <!-- Instant Demo Login Button -->
+                <button type="button" id="demo-login-btn" class="btn btn-light border w-100 py-2 small d-flex align-items-center justify-content-center gap-2 text-dark">
+                    <i class="bi bi-person-badge text-primary"></i>
+                    <span>Log in as Demo Student (Alex Johnson)</span>
+                </button>
+
+                <!-- Navigation Footer -->
+                <div class="text-center mt-4">
+                    <p class="small text-muted mb-2">
+                        Don't have an account? 
+                        <a href="register.html" class="text-primary fw-semibold text-decoration-none">Create Account</a>
+                    </p>
+                    <a href="index.html" class="small text-muted text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Landing Page
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- TaskFlow API Client -->
+    <script src="js/api.js"></script>
+    <!-- Auth Controller -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('login-form');
+            const emailInput = document.getElementById('login-email');
+            const passwordInput = document.getElementById('login-password');
+            const submitBtn = document.getElementById('login-submit-btn');
+            const alertBox = document.getElementById('login-alert');
+            const alertMsg = document.getElementById('login-alert-msg');
+            const togglePwBtn = document.getElementById('toggle-password-btn');
+            const togglePwIcon = document.getElementById('toggle-password-icon');
+            const demoLoginBtn = document.getElementById('demo-login-btn');
+            const quickDemoLink = document.getElementById('quick-demo-link');
+
+            // Show / Hide password
+            if (togglePwBtn && passwordInput && togglePwIcon) {
+                togglePwBtn.addEventListener('click', () => {
+                    const isPw = passwordInput.type === 'password';
+                    passwordInput.type = isPw ? 'text' : 'password';
+                    togglePwIcon.className = isPw ? 'bi bi-eye-slash' : 'bi bi-eye';
+                });
+            }
+
+            function showAlert(msg) {
+                if (!alertBox || !alertMsg) return;
+                alertMsg.textContent = msg;
+                alertBox.classList.remove('d-none');
+            }
+
+            function hideAlert() {
+                if (alertBox) alertBox.classList.add('d-none');
+            }
+
+            // Quick demo fill
+            function fillDemoCredentials() {
+                emailInput.value = 'alex.student@example.edu';
+                passwordInput.value = 'student123';
+                hideAlert();
+            }
+
+            if (quickDemoLink) {
+                quickDemoLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    fillDemoCredentials();
+                });
+            }
+
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // Real-time live validation
+            emailInput.addEventListener('input', () => {
+                const val = emailInput.value.trim();
+                if (val && !isValidEmail(val)) {
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailInput.classList.remove('is-invalid');
+                }
+            });
+
+            emailInput.addEventListener('blur', () => {
+                const val = emailInput.value.trim();
+                if (!val || !isValidEmail(val)) {
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailInput.classList.remove('is-invalid');
+                }
+            });
+
+            passwordInput.addEventListener('input', () => {
+                if (passwordInput.value) {
+                    passwordInput.classList.remove('is-invalid');
+                }
+            });
+
+            // Form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                hideAlert();
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                // Validation
+                let hasErr = false;
+                if (!email || !isValidEmail(email)) {
+                    emailInput.classList.add('is-invalid');
+                    hasErr = true;
+                } else {
+                    emailInput.classList.remove('is-invalid');
+                }
+
+                if (!password) {
+                    passwordInput.classList.add('is-invalid');
+                    hasErr = true;
+                } else {
+                    passwordInput.classList.remove('is-invalid');
+                }
+
+                if (hasErr) {
+                    showAlert('Please fill in all required fields.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Signing in...';
+
+                try {
+                    const res = await window.TaskFlowAPI.login({ email, password });
+                    if (res.ok) {
+                        // Redirect to dashboard on successful login
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        showAlert(res.message || 'Invalid email or password.');
+                    }
+                } catch (err) {
+                    showAlert('Connection error. Please ensure Flask server is running.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span>Sign In</span><i class="bi bi-arrow-right ms-2"></i>';
+                }
+            });
+
+            // One-click demo login button
+            if (demoLoginBtn) {
+                demoLoginBtn.addEventListener('click', async () => {
+                    fillDemoCredentials();
+                    form.dispatchEvent(new Event('submit'));
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
